@@ -7,17 +7,13 @@ import java.io.IOException;
 
 public class App {
 
-    private static final String FILE_PATH = "/home/quan/Documents/R-Challenge/app/src/main/resources";
-    private static final String INPUT_FILE_NAME = "land.txt";
-    private static final String OUTPUT_FILE_NAME = "out.txt";
-
     public static void main(String[] args) throws IOException {
         double start = System.nanoTime();
         ChallengeApp app = ChallengeApp
                 .builder()
-                .filePath(FILE_PATH)
-                .inputFile(INPUT_FILE_NAME)
-                .outputFile(OUTPUT_FILE_NAME)
+                .filePath("/home/quan/Documents/R-Challenge/app/src/main/resources")
+                .inputFile("land.txt")
+                .outputFile("out.txt")
                 .build();
         app.run();
         double end = System.nanoTime();

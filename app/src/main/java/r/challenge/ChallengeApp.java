@@ -10,33 +10,24 @@ import r.challenge.writer.Writer;
 import r.challenge.writer.WriterFactory;
 
 public class ChallengeApp {
-    private final String dataFilePath;
-    private final String inputFileName;
-    private final String outputFileName;
+    private static Reader reader;
+    private static Writer writer;
+    private static Extractor extractor;
 
     private ChallengeApp(String dataFilePath, String inputFileName, String outputFileName) {
-        this.dataFilePath = dataFilePath;
-        this.inputFileName = inputFileName;
-        this.outputFileName = outputFileName;
+        reader = ReaderFactory.getReader(dataFilePath, inputFileName);
+        writer = WriterFactory.getWriter(dataFilePath, outputFileName);
+        extractor = ExtractorFactory.getExtractor();
     }
 
     public void run() throws IOException {
-        Reader reader = ReaderFactory.getReader(dataFilePath, inputFileName);
-        Writer writer = WriterFactory.getWriter(dataFilePath, outputFileName);
-        Extractor extractor = ExtractorFactory.getExtractor();
         PreviousLand previousLand = new PreviousLand();
-        while (true) {
-            if (reader.read() == null) {
-                break;
-            }
-            StringBuilder line = new StringBuilder(reader.read());
-            String[] lineSplited = line.toString().split(" ");
-            line.setLength(0);
-            line.append(lineSplited[1]);
-            String[] landInfo = reverse(line.toString()).split("x", 2);
-            String width = reverse(landInfo[1]);
-            String height = reverse(landInfo[0]);
-            Land nowLand = new Land(lineSplited[0], extractor.extractNumber(width), extractor.extractNumber(height));
+        String textLine;
+        while ((textLine = reader.read()) != null) {
+            String[] lineSplited = textLine.split(" ");
+            String[] landInfo = subXCharacter(lineSplited[1]);
+            Land nowLand = new Land(lineSplited[0], extractor.extractNumber(landInfo[0]),
+                    extractor.extractNumber(landInfo[1]));
             if (previousLand.getValue() == null) {
                 previousLand.setValue(nowLand);
             }
@@ -54,9 +45,10 @@ public class ChallengeApp {
         return new Builder();
     }
 
-    private String reverse(String target) {
-        StringBuilder builder = new StringBuilder(target);
-        return builder.reverse().toString();
+    private String[] subXCharacter(String target) {
+        int xCharacterPosition = target.lastIndexOf("x");
+        String[] c = { target.substring(0, xCharacterPosition), target.substring(xCharacterPosition + 1) };
+        return c;
     }
 
     static class Builder {
